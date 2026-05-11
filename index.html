@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>接力棒 - 高校实习互助平台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #4F46E5;
+            --primary-light: #818CF8;
+            --primary-dark: #3730A3;
+            --secondary: #F59E0B;
+            --success: #10B981;
+            --danger: #EF4444;
+            --school: #7C3AED;
+            --school-light: #A78BFA;
+            --school-bg: #EDE9FE;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --gray-400: #9CA3AF;
+            --gray-500: #6B7280;
+            --gray-600: #4B5563;
+            --gray-700: #374151;
+            --gray-800: #1F2937;
+            --gray-900: #111827;
+            --radius: 12px;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: var(--gray-50);
+            color: var(--gray-800);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* ========== Landing Page ========== */
+        .landing-page { min-height: 100vh; display: flex; flex-direction: column; }
+
+        .landing-nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            background: rgba(255,255,255,0.9); backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--gray-200); padding: 0 24px;
+            height: 64px; display: flex; align-items: center; justify-content: space-between;
+            transition: all 0.3s;
+        }
+        .landing-nav.scrolled { box-shadow: var(--shadow-md); }
+
+        .nav-logo {
+            display: flex; align-items: center; gap: 10px;
+            font-size: 20px; font-weight: 700; color: var(--primary); cursor: pointer;
+        }
+        .nav-logo .logo-icon {
+            width: 36px; height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 10px; display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 18px;
+        }
+
+        .nav-links { display: flex; align-items: center; gap: 32px; }
+        .nav-links a { text-decoration: none; color: var(--gray-600); font-size: 14px; font-weight: 500; transition: color 0.2s; }
+        .nav-links a:hover { color: var(--primary); }
+        .nav-actions { display: flex; gap: 12px; }
+
+        /* Hero */
+        .hero {
+            padding: 140px 24px 80px; text-align: center;
+            background: linear-gradient(180deg, #EEF2FF 0%, #F9FAFB 100%);
+            position: relative; overflow: hidden;
+        }
+        .hero::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle at 30% 50%, rgba(79,70,229,0.05) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 50%, rgba(124,58,237,0.05) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+        }
+        @keyframes float { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(-2%,2%); } }
+
+        .hero-content { position: relative; max-width: 800px; margin: 0 auto; }
+
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px;
+            background: white; border: 1px solid var(--gray-200); border-radius: 100px;
+            font-size: 13px; color: var(--gray-600); margin-bottom: 24px; box-shadow: var(--shadow);
+        }
+        .hero-badge .dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+        .hero h1 { font-size: 56px; font-weight: 800; line-height: 1.15; color: var(--gray-900); margin-bottom: 20px; letter-spacing: -1px; }
+        .hero h1 .highlight {
+            background: linear-gradient(135deg, var(--primary), var(--school));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .hero p { font-size: 18px; color: var(--gray-500); max-width: 600px; margin: 0 auto 36px; line-height: 1.7; }
+
+        .hero-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+        /* School Selector on Landing */
+        .school-selector-landing {
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            margin-bottom: 32px; flex-wrap: wrap;
+        }
+        .school-selector-landing label { font-size: 15px; font-weight: 600; color: var(--gray-700); }
+        .school-select-lg {
+            padding: 12px 20px; border: 2px solid var(--school); border-radius: 12px;
+            font-size: 16px; font-weight: 600; color: var(--school); background: var(--school-bg);
+            cursor: pointer; outline: none; appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%237C3AED' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 16px center; padding-right: 40px;
+        }
+
+        .hero-stats {
+            display: flex; gap: 48px; justify-content: center; margin-top: 64px;
+            padding-top: 48px; border-top: 1px solid var(--gray-200);
+        }
+        .stat-item { text-align: center; }
+        .stat-number { font-size: 36px; font-weight: 800; color: var(--gray-900); }
+        .stat-label { font-size: 14px; color: var(--gray-500); margin-top: 4px; }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 12px 24px; border: none; border-radius: 10px; font-size: 14px; font-weight: 600;
+            cursor: pointer; transition: all 0.2s; text-decoration: none; white-space: nowrap;
+        }
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 2px 8px rgba(79,70,229,0.3); }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(79,70,229,0.4); }
+        .btn-secondary { background: white; color: var(--gray-700); border: 1px solid var(--gray-300); }
+        .btn-secondary:hover { background: var(--gray-50); border-color: var(--gray-400); }
+        .btn-ghost { background: transparent; color: var(--gray-600); padding: 8px 16px; }
+        .btn-ghost:hover { background: var(--gray-100); color: var(--gray-800); }
+        .btn-sm { padding: 8px 16px; font-size: 13px; border-radius: 8px; }
+        .btn-lg { padding: 14px 32px; font-size: 16px; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #059669; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); }
+        .btn-outline:hover { background: var(--primary); color: white; }
+        .btn-school { background: var(--school); color: white; box-shadow: 0 2px 8px rgba(124,58,237,0.3); }
+        .btn-school:hover { background: #6D28D9; }
+
+        /* Features */
+        .features-section { padding: 80px 24px; max-width: 1200px; margin: 0 auto; }
+        .section-header { text-align: center; margin-bottom: 56px; }
+        .section-header h2 { font-size: 36px; font-weight: 800; color: var(--gray-900); margin-bottom: 12px; }
+        .section-header p { font-size: 16px; color: var(--gray-500); }
+
+        .features-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+        .feature-card {
+            background: white; border-radius: var(--radius); padding: 32px 24px;
+            border: 1px solid var(--gray-200); transition: all 0.3s; cursor: pointer;
+        }
+        .feature-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--primary-light); }
+        .feature-icon {
+            width: 48px; height: 48px; border-radius: 12px; display: flex;
+            align-items: center; justify-content: center; font-size: 24px; margin-bottom: 20px;
+        }
+        .feature-card:nth-child(1) .feature-icon { background: #EEF2FF; }
+        .feature-card:nth-child(2) .feature-icon { background: #EDE9FE; }
+        .feature-card:nth-child(3) .feature-icon { background: #D1FAE5; }
+        .feature-card:nth-child(4) .feature-icon { background: #FCE7F3; }
+        .feature-card h3 { font-size: 18px; font-weight: 700; color: var(--gray-900); margin-bottom: 8px; }
+        .feature-card p { font-size: 14px; color: var(--gray-500); line-height: 1.6; }
+
+        /* School Advantage Section */
+        .school-advantage {
+            padding: 80px 24px; background: linear-gradient(135deg, #EDE9FE 0%, #EEF2FF 100%);
+        }
+        .advantage-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 1000px; margin: 0 auto; }
+        .advantage-card {
+            background: white; border-radius: var(--radius); padding: 28px; text-align: center;
+            border: 1px solid rgba(124,58,237,0.1); box-shadow: var(--shadow);
+        }
+        .advantage-card .adv-icon { font-size: 36px; margin-bottom: 16px; }
+        .advantage-card h3 { font-size: 16px; font-weight: 700; color: var(--gray-900); margin-bottom: 8px; }
+        .advantage-card p { font-size: 13px; color: var(--gray-500); line-height: 1.6; }
+
+        /* How It Works */
+        .how-section { padding: 80px 24px; background: white; }
+        .steps { max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; }
+        .step { display: flex; gap: 24px; position: relative; padding-bottom: 40px; }
+        .step:last-child { padding-bottom: 0; }
+        .step-indicator { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+        .step-number {
+            width: 40px; height: 40px; border-radius: 50%; background: var(--primary); color: white;
+            display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; z-index: 1;
+        }
+        .step-line { width: 2px; flex: 1; background: var(--gray-200); margin-top: 8px; }
+        .step:last-child .step-line { display: none; }
+        .step-content h3 { font-size: 18px; font-weight: 700; color: var(--gray-900); margin-bottom: 8px; padding-top: 8px; }
+        .step-content p { font-size: 14px; color: var(--gray-500); line-height: 1.7; }
+
+        /* Footer */
+        .landing-footer {
+            padding: 48px 24px; background: var(--gray-900); color: var(--gray-400); text-align: center;
+        }
+        .landing-footer p { font-size: 14px; }
+        .footer-links { display: flex; gap: 24px; justify-content: center; margin-top: 16px; }
+        .footer-links a { color: var(--gray-400); text-decoration: none; font-size: 13px; }
+        .footer-links a:hover { color: white; }
+
+        /* ========== App Layout ========== */
+        .app-container { display: none; min-height: 100vh; }
+        .app-container.active { display: flex; }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px; background: white; border-right: 1px solid var(--gray-200);
+            height: 100vh; position: fixed; left: 0; top: 0; display: flex; flex-direction: column; z-index: 100;
+        }
+        .sidebar-header { padding: 20px 20px 12px; border-bottom: 1px solid var(--gray-100); }
+        .sidebar-logo {
+            display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 700; color: var(--primary);
+        }
+        .sidebar-logo .logo-icon {
+            width: 32px; height: 32px; background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 16px;
+        }
+
+        /* School Indicator in Sidebar */
+        .school-indicator {
+            margin: 12px 20px 0; padding: 10px 14px; background: var(--school-bg); border-radius: 10px;
+            display: flex; align-items: center; gap: 10px; cursor: pointer; transition: all 0.15s;
+            border: 1px solid rgba(124,58,237,0.15);
+        }
+        .school-indicator:hover { border-color: var(--school); }
+        .school-indicator .school-icon { font-size: 20px; }
+        .school-indicator .school-name { font-size: 13px; font-weight: 600; color: var(--school); flex: 1; }
+        .school-indicator .school-switch { font-size: 11px; color: var(--school-light); }
+
+        .sidebar-nav { flex: 1; padding: 12px; overflow-y: auto; }
+        .nav-section-label { font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--gray-400); padding: 16px 12px 8px; letter-spacing: 0.5px; }
+        .nav-item {
+            display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 8px;
+            cursor: pointer; transition: all 0.15s; font-size: 14px; color: var(--gray-600); font-weight: 500; margin-bottom: 2px;
+        }
+        .nav-item:hover { background: var(--gray-100); color: var(--gray-800); }
+        .nav-item.active { background: #EEF2FF; color: var(--primary); }
+        .nav-item .nav-icon { width: 20px; text-align: center; font-size: 16px; }
+        .nav-item .nav-badge { margin-left: auto; background: var(--danger); color: white; font-size: 11px; padding: 2px 7px; border-radius: 100px; font-weight: 600; }
+
+        .sidebar-footer { padding: 16px; border-top: 1px solid var(--gray-100); }
+        .user-card { display: flex; align-items: center; gap: 12px; padding: 8px; border-radius: 8px; cursor: pointer; transition: background 0.15s; }
+        .user-card:hover { background: var(--gray-100); }
+        .user-avatar {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 14px; flex-shrink: 0;
+        }
+        .user-info { flex: 1; min-width: 0; }
+        .user-name { font-size: 14px; font-weight: 600; color: var(--gray-800); }
+        .user-school { font-size: 12px; color: var(--gray-400); }
+
+        /* Main Content */
+        .main-content { margin-left: 260px; flex: 1; min-height: 100vh; }
+
+        .top-bar {
+            height: 64px; background: white; border-bottom: 1px solid var(--gray-200);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 32px;
+            position: sticky; top: 0; z-index: 50;
+        }
+        .top-bar-left { display: flex; align-items: center; gap: 16px; }
+        .page-title { font-size: 18px; font-weight: 700; color: var(--gray-900); }
+        .top-bar-right { display: flex; align-items: center; gap: 16px; }
+
+        .search-box {
+            display: flex; align-items: center; gap: 8px; padding: 8px 14px;
+            background: var(--gray-100); border-radius: 8px; border: 1px solid transparent; transition: all 0.2s;
+        }
+        .search-box:focus-within { background: white; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
+        .search-box input { border: none; background: none; outline: none; font-size: 14px; width: 200px; color: var(--gray-700); }
+
+        .icon-btn {
+            width: 36px; height: 36px; border-radius: 8px; border: none; background: transparent;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            font-size: 18px; color: var(--gray-500); transition: all 0.15s; position: relative;
+        }
+        .icon-btn:hover { background: var(--gray-100); color: var(--gray-700); }
+        .icon-btn .badge-dot { position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; background: var(--danger); border-radius: 50%; border: 2px solid white; }
+
+        .page-content { padding: 32px; }
+        .page { display: none; }
+        .page.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* School Banner */
+        .school-banner {
+            background: linear-gradient(135deg, var(--school), var(--primary));
+            border-radius: var(--radius); padding: 20px 24px; margin-bottom: 24px;
+            display: flex; align-items: center; justify-content: space-between; color: white;
+        }
+        .school-banner-left { display: flex; align-items: center; gap: 14px; }
+        .school-banner-icon { font-size: 32px; }
+        .school-banner h3 { font-size: 18px; font-weight: 700; }
+        .school-banner p { font-size: 13px; opacity: 0.85; margin-top: 2px; }
+        .school-banner-stats { display: flex; gap: 24px; }
+        .school-banner-stat { text-align: center; }
+        .school-banner-stat .sbs-num { font-size: 22px; font-weight: 800; }
+        .school-banner-stat .sbs-label { font-size: 11px; opacity: 0.8; }
+
+        /* Scope Toggle */
+        .scope-toggle {
+            display: inline-flex; background: var(--gray-100); border-radius: 10px; padding: 3px; margin-bottom: 16px;
+        }
+        .scope-btn {
+            padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 600;
+            cursor: pointer; transition: all 0.15s; border: none; background: transparent; color: var(--gray-500);
+        }
+        .scope-btn.active { background: white; color: var(--school); box-shadow: var(--shadow); }
+        .scope-btn.active.all-scope { color: var(--primary); }
+
+        /* Same School Badge */
+        .same-school-badge {
+            display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px;
+            background: var(--school-bg); color: var(--school); border-radius: 6px;
+            font-size: 11px; font-weight: 600;
+        }
+
+        /* School Priority Indicator */
+        .school-priority {
+            display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px;
+            background: linear-gradient(135deg, var(--school-bg), #EEF2FF); color: var(--school);
+            border-radius: 100px; font-size: 11px; font-weight: 600; border: 1px solid rgba(124,58,237,0.2);
+        }
+
+        /* Filter */
+        .filter-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+        .filter-tag {
+            padding: 6px 14px; border-radius: 100px; font-size: 13px; font-weight: 500;
+            border: 1px solid var(--gray-300); background: white; color: var(--gray-600); cursor: pointer; transition: all 0.15s;
+        }
+        .filter-tag:hover, .filter-tag.active { background: var(--primary); color: white; border-color: var(--primary); }
+        select.filter-select {
+            padding: 8px 14px; border: 1px solid var(--gray-300); border-radius: 8px;
+            font-size: 13px; color: var(--gray-600); background: white; cursor: pointer; outline: none;
+        }
+
+        /* Job Cards */
+        .job-list { display: flex; flex-direction: column; gap: 16px; }
+        .job-card {
+            background: white; border-radius: var(--radius); padding: 24px;
+            border: 1px solid var(--gray-200); transition: all 0.2s; cursor: pointer; position: relative;
+        }
+        .job-card:hover { box-shadow: var(--shadow-md); border-color: var(--primary-light); }
+        .job-card.same-school { border-left: 3px solid var(--school); }
+        .job-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+        .job-title { font-size: 17px; font-weight: 700; color: var(--gray-900); }
+        .job-match { padding: 4px 12px; border-radius: 100px; font-size: 12px; font-weight: 600; background: #D1FAE5; color: #065F46; }
+
+        .job-company { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .company-logo { width: 40px; height: 40px; border-radius: 8px; background: var(--gray-100); display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .company-info { flex: 1; }
+        .company-name { font-size: 14px; font-weight: 600; color: var(--gray-700); }
+        .company-dept { font-size: 12px; color: var(--gray-400); }
+
+        .job-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+        .tag { padding: 3px 10px; border-radius: 6px; font-size: 12px; font-weight: 500; background: var(--gray-100); color: var(--gray-600); }
+        .tag-primary { background: #EEF2FF; color: var(--primary); }
+        .tag-warning { background: #FEF3C7; color: #92400E; }
+        .tag-success { background: #D1FAE5; color: #065F46; }
+        .tag-school { background: var(--school-bg); color: var(--school); }
+
+        .job-meta { display: flex; align-items: center; gap: 20px; font-size: 13px; color: var(--gray-400); }
+        .job-meta span { display: flex; align-items: center; gap: 4px; }
+
+        .job-footer {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--gray-100);
+        }
+        .publisher { display: flex; align-items: center; gap: 8px; }
+        .publisher-avatar {
+            width: 28px; height: 28px; border-radius: 50%;
+            background: linear-gradient(135deg, #F59E0B, #FBBF24);
+            display: flex; align-items: center; justify-content: center; color: white; font-size: 11px; font-weight: 700;
+        }
+        .publisher-info { font-size: 12px; }
+        .publisher-name { font-weight: 600; color: var(--gray-700); }
+        .publisher-credit { color: var(--gray-400); }
+        .verified-badge { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; color: var(--success); font-weight: 600; }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); z-index: 1000; display: none;
+            align-items: center; justify-content: center; padding: 24px;
+        }
+        .modal-overlay.active { display: flex; animation: fadeIn 0.2s; }
+        .modal {
+            background: white; border-radius: 16px; width: 100%; max-width: 640px;
+            max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-xl);
+        }
+        .modal-header { padding: 24px 24px 0; display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h2 { font-size: 20px; font-weight: 700; color: var(--gray-900); }
+        .modal-close {
+            width: 32px; height: 32px; border-radius: 8px; border: none; background: var(--gray-100);
+            cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center;
+            color: var(--gray-500); transition: all 0.15s;
+        }
+        .modal-close:hover { background: var(--gray-200); }
+        .modal-body { padding: 24px; }
+        .modal-footer { padding: 16px 24px 24px; display: flex; gap: 12px; justify-content: flex-end; }
+
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; font-size: 13px; font-weight: 600; color: var(--gray-700); margin-bottom: 6px; }
+        .form-label .required { color: var(--danger); }
+        .form-input, .form-textarea, .form-select {
+            width: 100%; padding: 10px 14px; border: 1px solid var(--gray-300); border-radius: 8px;
+            font-size: 14px; color: var(--gray-700); background: white; outline: none; transition: all 0.15s; font-family: inherit;
+        }
+        .form-input:focus, .form-textarea:focus, .form-select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
+        .form-textarea { resize: vertical; min-height: 100px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .checkbox-group { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+        .checkbox-group input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary); }
+        .checkbox-group label { font-size: 13px; color: var(--gray-600); }
+
+        /* Referral */
+        .referral-tabs { display: flex; gap: 0; margin-bottom: 24px; border-bottom: 2px solid var(--gray-200); }
+        .referral-tab {
+            padding: 12px 20px; font-size: 14px; font-weight: 600; color: var(--gray-500);
+            cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.15s;
+        }
+        .referral-tab:hover { color: var(--gray-700); }
+        .referral-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+        .referral-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+        .referrer-card {
+            background: white; border-radius: var(--radius); padding: 24px;
+            border: 1px solid var(--gray-200); transition: all 0.2s; position: relative;
+        }
+        .referrer-card:hover { box-shadow: var(--shadow-md); }
+        .referrer-card.same-school { border-left: 3px solid var(--school); }
+        .referrer-header { display: flex; gap: 14px; margin-bottom: 16px; }
+        .referrer-avatar {
+            width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; color: white; font-weight: 700; font-size: 16px; flex-shrink: 0;
+        }
+        .referrer-name { font-size: 16px; font-weight: 700; color: var(--gray-900); }
+        .referrer-label { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
+
+        .referrer-stats { display: flex; gap: 16px; margin-bottom: 16px; }
+        .referrer-stat { text-align: center; flex: 1; padding: 8px; background: var(--gray-50); border-radius: 8px; }
+        .referrer-stat-num { font-size: 18px; font-weight: 700; color: var(--gray-900); }
+        .referrer-stat-label { font-size: 11px; color: var(--gray-400); }
+
+        .position-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--gray-100); }
+        .position-item:last-child { border-bottom: none; }
+        .position-title { font-size: 13px; font-weight: 600; color: var(--gray-700); }
+        .position-slots { font-size: 12px; color: var(--gray-400); }
+
+        /* Community */
+        .community-layout { display: grid; grid-template-columns: 1fr 320px; gap: 24px; }
+        .post-composer {
+            background: white; border-radius: var(--radius); padding: 20px;
+            border: 1px solid var(--gray-200); margin-bottom: 20px;
+        }
+        .composer-header { display: flex; gap: 12px; align-items: center; }
+        .composer-input {
+            flex: 1; padding: 10px 16px; background: var(--gray-100); border: 1px solid transparent;
+            border-radius: 100px; font-size: 14px; color: var(--gray-500); cursor: pointer; transition: all 0.15s;
+        }
+        .composer-input:hover { background: var(--gray-50); border-color: var(--gray-300); }
+        .composer-actions { display: flex; gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--gray-100); }
+        .composer-action {
+            display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 8px;
+            font-size: 13px; color: var(--gray-500); cursor: pointer; transition: all 0.15s;
+        }
+        .composer-action:hover { background: var(--gray-100); color: var(--gray-700); }
+
+        .post-card { background: white; border-radius: var(--radius); border: 1px solid var(--gray-200); margin-bottom: 16px; overflow: hidden; }
+        .post-card.same-school { border-left: 3px solid var(--school); }
+        .post-header { padding: 16px 20px 0; display: flex; justify-content: space-between; align-items: flex-start; }
+        .post-author { display: flex; gap: 12px; align-items: center; }
+        .post-author-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 14px; }
+        .post-author-name { font-size: 14px; font-weight: 600; color: var(--gray-800); }
+        .post-author-meta { font-size: 12px; color: var(--gray-400); }
+        .post-category { padding: 3px 10px; border-radius: 6px; font-size: 12px; font-weight: 500; }
+
+        .post-body { padding: 12px 20px; }
+        .post-body h3 { font-size: 16px; font-weight: 700; color: var(--gray-900); margin-bottom: 8px; }
+        .post-body p { font-size: 14px; color: var(--gray-600); line-height: 1.7; }
+        .post-image { width: 100%; height: 200px; background: linear-gradient(135deg, var(--gray-100), var(--gray-200)); display: flex; align-items: center; justify-content: center; color: var(--gray-400); font-size: 40px; margin: 8px 0; }
+
+        .post-actions { padding: 12px 20px; display: flex; gap: 24px; border-top: 1px solid var(--gray-100); }
+        .post-action {
+            display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--gray-500);
+            cursor: pointer; padding: 4px 8px; border-radius: 6px; transition: all 0.15s;
+        }
+        .post-action:hover { background: var(--gray-100); color: var(--gray-700); }
+        .post-action.liked { color: var(--danger); }
+
+        .sidebar-widget { background: white; border-radius: var(--radius); border: 1px solid var(--gray-200); padding: 20px; margin-bottom: 16px; }
+        .widget-title { font-size: 15px; font-weight: 700; color: var(--gray-900); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .trending-item { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--gray-100); cursor: pointer; }
+        .trending-item:last-child { border-bottom: none; }
+        .trending-rank {
+            width: 24px; height: 24px; border-radius: 6px; background: var(--gray-100);
+            display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: var(--gray-500); flex-shrink: 0;
+        }
+        .trending-item:nth-child(-n+3) .trending-rank { background: var(--school); color: white; }
+        .trending-title { font-size: 13px; font-weight: 500; color: var(--gray-700); line-height: 1.4; }
+        .trending-meta { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+
+        /* Profile */
+        .profile-header-card { background: white; border-radius: var(--radius); border: 1px solid var(--gray-200); overflow: hidden; margin-bottom: 24px; }
+        .profile-cover { height: 120px; background: linear-gradient(135deg, var(--school), var(--primary), var(--primary-light)); position: relative; }
+        .profile-main { padding: 0 24px 24px; display: flex; gap: 20px; align-items: flex-end; margin-top: -40px; position: relative; }
+        .profile-avatar-lg {
+            width: 80px; height: 80px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            display: flex; align-items: center; justify-content: center; color: white;
+            font-weight: 800; font-size: 28px; border: 4px solid white; flex-shrink: 0;
+        }
+        .profile-info { flex: 1; padding-top: 44px; }
+        .profile-name { font-size: 22px; font-weight: 800; color: var(--gray-900); }
+        .profile-bio { font-size: 14px; color: var(--gray-500); margin-top: 4px; }
+        .profile-tags { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+        .profile-actions { display: flex; gap: 8px; padding-top: 44px; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+        .stat-card { background: white; border-radius: var(--radius); padding: 20px; border: 1px solid var(--gray-200); text-align: center; }
+        .stat-card-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin: 0 auto 12px; }
+        .stat-card-value { font-size: 28px; font-weight: 800; color: var(--gray-900); }
+        .stat-card-label { font-size: 13px; color: var(--gray-500); margin-top: 4px; }
+
+        .profile-section { background: white; border-radius: var(--radius); border: 1px solid var(--gray-200); margin-bottom: 24px; }
+        .profile-section-header {
+            padding: 20px 24px; border-bottom: 1px solid var(--gray-100);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .profile-section-header h3 { font-size: 16px; font-weight: 700; color: var(--gray-900); }
+        .profile-section-body { padding: 24px; }
+
+        .resume-card {
+            display: flex; align-items: center; gap: 16px; padding: 16px;
+            border: 1px solid var(--gray-200); border-radius: 10px; margin-bottom: 12px; transition: all 0.15s;
+        }
+        .resume-card:hover { border-color: var(--primary-light); box-shadow: var(--shadow); }
+        .resume-icon { width: 44px; height: 44px; border-radius: 10px; background: #EEF2FF; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+        .resume-info { flex: 1; }
+        .resume-name { font-size: 14px; font-weight: 600; color: var(--gray-800); }
+        .resume-meta { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
+
+        .credit-display { text-align: center; padding: 32px; }
+        .credit-circle {
+            width: 160px; height: 160px; border-radius: 50%;
+            background: conic-gradient(var(--school) 0deg, var(--primary) 280deg, var(--gray-200) 280deg);
+            display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; position: relative;
+        }
+        .credit-circle-inner {
+            width: 130px; height: 130px; border-radius: 50%; background: white;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .credit-score { font-size: 40px; font-weight: 800; color: var(--gray-900); line-height: 1; }
+        .credit-label { font-size: 13px; color: var(--gray-400); margin-top: 4px; }
+        .credit-level { display: inline-flex; align-items: center; gap: 6px; padding: 6px 16px; background: #D1FAE5; color: #065F46; border-radius: 100px; font-size: 14px; font-weight: 600; }
+        .credit-details { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 24px; }
+        .credit-detail { padding: 16px; background: var(--gray-50); border-radius: 10px; text-align: center; }
+        .credit-detail-value { font-size: 20px; font-weight: 700; color: var(--gray-900); }
+        .credit-detail-label { font-size: 12px; color: var(--gray-500); margin-top: 4px; }
+
+        .timeline { position: relative; }
+        .timeline-item { display: flex; gap: 16px; padding-bottom: 24px; position: relative; }
+        .timeline-item:last-child { padding-bottom: 0; }
+        .timeline-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--primary); flex-shrink: 0; margin-top: 4px; position: relative; }
+        .timeline-item:not(:last-child) .timeline-dot::after {
+            content: ''; position: absolute; left: 50%; top: 16px; transform: translateX(-50%);
+            width: 2px; height: calc(100% + 12px); background: var(--gray-200);
+        }
+        .timeline-content { flex: 1; }
+        .timeline-title { font-size: 14px; font-weight: 600; color: var(--gray-800); }
+        .timeline-desc { font-size: 13px; color: var(--gray-500); margin-top: 2px; }
+        .timeline-time { font-size: 12px; color: var(--gray-400); margin-top: 4px; }
+
+        /* Progress Tracker */
+        .progress-tracker { display: flex; flex-direction: column; }
+        .progress-step { display: flex; gap: 16px; padding-bottom: 24px; position: relative; }
+        .progress-step:last-child { padding-bottom: 0; }
+        .progress-step-indicator { display: flex; flex-direction: column; align-items: center; }
+        .progress-step-circle {
+            width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--gray-300);
+            display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600;
+            color: var(--gray-400); background: white; z-index: 1;
+        }
+        .progress-step.done .progress-step-circle { background: var(--success); border-color: var(--success); color: white; }
+        .progress-step.current .progress-step-circle { background: var(--primary); border-color: var(--primary); color: white; animation: pulse 2s infinite; }
+        .progress-step-line { width: 2px; flex: 1; background: var(--gray-200); margin-top: 4px; }
+        .progress-step.done .progress-step-line { background: var(--success); }
+        .progress-step:last-child .progress-step-line { display: none; }
+        .progress-step-content h4 { font-size: 14px; font-weight: 600; color: var(--gray-800); padding-top: 5px; }
+        .progress-step-content p { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
+
+        /* Match Modal */
+        .match-list { display: flex; flex-direction: column; gap: 12px; }
+        .match-item {
+            display: flex; align-items: center; gap: 14px; padding: 14px;
+            border: 1px solid var(--gray-200); border-radius: 10px; transition: all 0.15s;
+        }
+        .match-item:hover { border-color: var(--primary-light); box-shadow: var(--shadow); }
+        .match-item.same-school-match { border-left: 3px solid var(--school); background: rgba(124,58,237,0.02); }
+        .match-avatar { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 15px; flex-shrink: 0; }
+        .match-info { flex: 1; }
+        .match-name { font-size: 14px; font-weight: 600; color: var(--gray-800); }
+        .match-desc { font-size: 12px; color: var(--gray-400); }
+        .match-score { font-size: 20px; font-weight: 800; color: var(--primary); }
+        .match-score span { font-size: 12px; color: var(--gray-400); font-weight: 500; }
+
+        .progress-bar { height: 6px; background: var(--gray-200); border-radius: 100px; overflow: hidden; margin-top: 8px; }
+        .progress-fill { height: 100%; border-radius: 100px; background: linear-gradient(90deg, var(--school), var(--primary)); transition: width 0.5s ease; }
+
+        /* Detail Modal */
+        .detail-modal .modal { max-width: 720px; }
+        .detail-section { margin-bottom: 24px; }
+        .detail-section h4 { font-size: 14px; font-weight: 600; color: var(--gray-900); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .detail-item { padding: 12px; background: var(--gray-50); border-radius: 8px; }
+        .detail-item-label { font-size: 12px; color: var(--gray-400); margin-bottom: 4px; }
+        .detail-item-value { font-size: 14px; font-weight: 600; color: var(--gray-800); }
+
+        /* Compose */
+        .compose-type-selector { display: flex; gap: 12px; margin-bottom: 20px; }
+        .compose-type {
+            flex: 1; padding: 12px; border: 2px solid var(--gray-200); border-radius: 10px;
+            text-align: center; cursor: pointer; transition: all 0.15s;
+        }
+        .compose-type:hover { border-color: var(--gray-300); }
+        .compose-type.active { border-color: var(--primary); background: #EEF2FF; }
+        .compose-type .type-icon { font-size: 24px; margin-bottom: 4px; }
+        .compose-type .type-label { font-size: 13px; font-weight: 600; color: var(--gray-700); }
+
+        /* Tab Content */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Notification */
+        .notification-panel {
+            position: fixed; top: 0; right: -400px; width: 400px; height: 100vh;
+            background: white; box-shadow: -4px 0 20px rgba(0,0,0,0.1); z-index: 200;
+            transition: right 0.3s ease; display: flex; flex-direction: column;
+        }
+        .notification-panel.open { right: 0; }
+        .notification-header { padding: 20px; border-bottom: 1px solid var(--gray-200); display: flex; justify-content: space-between; align-items: center; }
+        .notification-header h3 { font-size: 18px; font-weight: 700; }
+        .notification-list { flex: 1; overflow-y: auto; padding: 12px; }
+        .notification-item { display: flex; gap: 12px; padding: 14px; border-radius: 10px; cursor: pointer; transition: background 0.15s; margin-bottom: 4px; }
+        .notification-item:hover { background: var(--gray-50); }
+        .notification-item.unread { background: var(--school-bg); }
+        .notif-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+        .notif-content { flex: 1; }
+        .notif-title { font-size: 13px; font-weight: 600; color: var(--gray-800); }
+        .notif-desc { font-size: 12px; color: var(--gray-500); margin-top: 2px; }
+        .notif-time { font-size: 11px; color: var(--gray-400); margin-top: 4px; }
+
+        /* Toast */
+        .toast-container { position: fixed; top: 80px; right: 24px; z-index: 2000; display: flex; flex-direction: column; gap: 8px; }
+        .toast {
+            padding: 14px 20px; background: white; border-radius: 10px; box-shadow: var(--shadow-lg);
+            display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; color: var(--gray-800);
+            animation: slideIn 0.3s ease, slideOut 0.3s ease 2.7s forwards; border-left: 4px solid var(--success);
+        }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+
+        /* School Switch Modal */
+        .school-list { display: flex; flex-direction: column; gap: 8px; }
+        .school-option {
+            display: flex; align-items: center; gap: 14px; padding: 14px 16px;
+            border: 2px solid var(--gray-200); border-radius: 10px; cursor: pointer; transition: all 0.15s;
+        }
+        .school-option:hover { border-color: var(--school-light); background: var(--school-bg); }
+        .school-option.selected { border-color: var(--school); background: var(--school-bg); }
+        .school-option .so-icon { font-size: 28px; }
+        .school-option .so-name { font-size: 15px; font-weight: 600; color: var(--gray-800); }
+        .school-option .so-count { font-size: 12px; color: var(--gray-400); }
+        .school-option .so-check { margin-left: auto; font-size: 18px; color: var(--school); display: none; }
+        .school-option.selected .so-check { display: block; }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .features-grid, .advantage-grid { grid-template-columns: repeat(2, 1fr); }
+            .community-layout { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 36px; }
+            .hero-stats { flex-wrap: wrap; gap: 24px; }
+            .features-grid, .advantage-grid { grid-template-columns: 1fr; }
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.mobile-open { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+            .nav-links { display: none; }
+            .profile-main { flex-direction: column; align-items: flex-start; }
+            .profile-actions { padding-top: 0; }
+            .school-banner { flex-direction: column; gap: 16px; text-align: center; }
+            .school-banner-stats { justify-content: center; }
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 100px; }
+    </style>
+</head>
+<body>
+
+<!-- ==================== LANDING PAGE ==================== -->
+<div class="landing-page" id="landingPage">
+    <nav class="landing-nav" id="landingNav">
+        <div class="nav-logo"><div class="logo-icon">🏃</div>接力棒</div>
+        <div class="nav-links">
+            <a href="#features">核心功能</a>
+            <a href="#school-adv">校内优势</a>
+            <a href="#how">使用流程</a>
+        </div>
+        <div class="nav-actions">
+            <button class="btn btn-ghost" onclick="showModal('loginModal')">登录</button>
+            <button class="btn btn-primary btn-sm" onclick="enterApp()">免费注册</button>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge"><span class="dot"></span>已有 156 所高校、12,000+ 学生正在使用</div>
+            <h1>同校学长学姐<br><span class="highlight">帮你接力上岸</span></h1>
+            <p>专注校内实习互助的平台——学长学姐离职时把岗位传给同校学弟学妹，校友内推优先同校，让每一份实习经验在校内接力传承。</p>
+
+            <div class="school-selector-landing">
+                <label>🏫 选择你的学校：</label>
+                <select class="school-select-lg" id="landingSchoolSelect" onchange="updateLandingSchool()">
+                    <option value="pku">北京大学</option>
+                    <option value="thu">清华大学</option>
+                    <option value="fdu">复旦大学</option>
+                    <option value="sjtu">上海交通大学</option>
+                    <option value="zju">浙江大学</option>
+                    <option value="nju">南京大学</option>
+                    <option value="ruc">中国人民大学</option>
+                    <option value="whu">武汉大学</option>
+                </select>
+            </div>
+
+            <div class="hero-buttons">
+                <button class="btn btn-school btn-lg" onclick="enterApp()">🏫 进入校内社区</button>
+                <button class="btn btn-secondary btn-lg" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">了解更多 →</button>
+            </div>
+
+            <div class="hero-stats">
+                <div class="stat-item"><div class="stat-number" id="statJobs">0</div><div class="stat-label">校内继任岗位</div></div>
+                <div class="stat-item"><div class="stat-number" id="statReferrals">0</div><div class="stat-label">校友内推机会</div></div>
+                <div class="stat-item"><div class="stat-number" id="statUsers">0</div><div class="stat-label">本校注册用户</div></div>
+                <div class="stat-item"><div class="stat-number" id="statSuccess">0</div><div class="stat-label">成功对接</div></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features-section" id="features">
+        <div class="section-header">
+            <h2>四大核心功能</h2>
+            <p>围绕校内实习互助，打造同校传承生态</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card" onclick="enterApp('successor')">
+                <div class="feature-icon">🔄</div>
+                <h3>找继任</h3>
+                <p>学长学姐离职时优先把岗位推荐给同校学弟学妹，同校匹配度更高，信任度更强。</p>
+            </div>
+            <div class="feature-card" onclick="enterApp('referral')">
+                <div class="feature-icon">🤝</div>
+                <h3>找内推</h3>
+                <p>校友内推官优先服务本校学生，同校标签增强信任感，内推成功率更高。</p>
+            </div>
+            <div class="feature-card" onclick="enterApp('community')">
+                <div class="feature-icon">💬</div>
+                <h3>实习圈</h3>
+                <p>校内专属社区，同校学长学姐的实习经验、公司评价、面经分享，更有针对性。</p>
+            </div>
+            <div class="feature-card" onclick="enterApp('profile')">
+                <div class="feature-icon">👤</div>
+                <h3>个人中心</h3>
+                <p>简历管理、校内信用积分、推荐记录，构建校内实习互助档案。</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="school-advantage" id="school-adv">
+        <div class="section-header">
+            <h2>🏫 为什么校内互助更有效？</h2>
+            <p>同校关系天然带来信任，让实习传承更顺畅</p>
+        </div>
+        <div class="advantage-grid">
+            <div class="advantage-card">
+                <div class="adv-icon">🤝</div>
+                <h3>天然信任关系</h3>
+                <p>同校学长学姐更愿意帮助自己的学弟学妹，推荐更真诚，岗位信息更真实可靠。</p>
+            </div>
+            <div class="advantage-card">
+                <div class="adv-icon">🎯</div>
+                <h3>精准匹配</h3>
+                <p>同校同专业的背景相似度更高，企业对同校推荐的认可度也更高，匹配成功率提升40%。</p>
+            </div>
+            <div class="advantage-card">
+                <div class="adv-icon">📚</div>
+                <h3>经验更有参考性</h3>
+                <p>同校学长学姐的实习经验、面试技巧更具针对性，因为你们有相似的课程背景和校招资源。</p>
+            </div>
+            <div class="advantage-card">
+                <div class="adv-icon">🔗</div>
+                <h3>人脉可延续</h3>
+                <p>校内互助建立的联系可以长期延续，形成持续的校友互助网络。</p>
+            </div>
+            <div class="advantage-card">
+                <div class="adv-icon">⭐</div>
+                <h3>信用可追溯</h3>
+                <p>校内信用体系更可靠，虚假信息在小圈子里无所遁形，保障平台真实性。</p>
+            </div>
+            <div class="advantage-card">
+                <div class="adv-icon">🚀</div>
+                <h3>传承有温度</h3>
+                <p>不只是冷冰冰的岗位信息，更是学长学姐的关心和指导，实习路上不孤单。</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="how-section" id="how">
+        <div class="section-header">
+            <h2>三步开启校内实习互助</h2>
+            <p>加入你的校内社区，开始接力</p>
+        </div>
+        <div class="steps">
+            <div class="step">
+                <div class="step-indicator"><div class="step-number">1</div><div class="step-line"></div></div>
+                <div class="step-content">
+                    <h3>选择学校 · 认证身份</h3>
+                    <p>通过学信网或校园邮箱认证你的在校生身份，加入你的校内实习互助社区。只有同校认证用户才能看到校内专属内容。</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-indicator"><div class="step-number">2</div><div class="step-line"></div></div>
+                <div class="step-content">
+                    <h3>完善简历 · 进入匹配池</h3>
+                    <p>填写个人信息和实习意向，系统优先在校内匹配。同校学长学姐发布的继任岗位会第一时间推送给你。</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-indicator"><div class="step-number">3</div></div>
+                <div class="step-content">
+                    <h3>接力传承 · 互助成长</h3>
+                    <p>获得学长学姐的岗位推荐和内推，未来你也可以把机会传给下一届学弟学妹，形成校内良性循环。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="landing-footer">
+        <p>© 2024 接力棒 - 高校实习互助平台 | 让实习经验在校内接力传承</p>
+        <div class="footer-links">
+            <a href="#">关于我们</a><a href="#">用户协议</a><a href="#">隐私政策</a><a href="#">帮助中心</a>
+        </div>
+    </footer>
+</div>
+
+<!-- ==================== APP CONTAINER ==================== -->
+<div class="app-container" id="appContainer">
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo"><div class="logo-icon">🏃</div>接力棒</div>
+            <div class="school-indicator" onclick="showModal('schoolSwitchModal')">
+                <span class="school-icon">🏫</span>
+                <span class="school-name" id="sidebarSchoolName">北京大学</span>
+                <span class="school-switch">切换 ▾</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section-label">主要功能</div>
+            <div class="nav-item active" data-page="successor" onclick="switchPage('successor')">
+                <span class="nav-icon">🔄</span>找继任<span class="nav-badge">8</span>
+            </div>
+            <div class="nav-item" data-page="referral" onclick="switchPage('referral')">
+                <span class="nav-icon">🤝</span>找内推<span class="nav-badge">5</span>
+            </div>
+            <div class="nav-item" data-page="community" onclick="switchPage('community')">
+                <span class="nav-icon">💬</span>实习圈
+            </div>
+            <div class="nav-section-label">个人</div>
+            <div class="nav-item" data-page="profile" onclick="switchPage('profile')">
+                <span class="nav-icon">👤</span>个人中心
+            </div>
+            <div class="nav-item" data-page="messages" onclick="switchPage('messages')">
+                <span class="nav-icon">📩</span>消息<span class="nav-badge">3</span>
+            </div>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-card" onclick="switchPage('profile')">
+                <div class="user-avatar">陈</div>
+                <div class="user-info"><div class="user-name">陈同学</div><div class="user-school">北京大学 · 计算机 · 大三</div></div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="top-bar">
+            <div class="top-bar-left"><h1 class="page-title" id="pageTitle">找继任</h1></div>
+            <div class="top-bar-right">
+                <div class="search-box">
+                    <span>🔍</span>
+                    <input type="text" placeholder="搜索岗位、公司、内容..." onkeypress="if(event.key==='Enter')showToast('搜索：'+this.value)">
+                </div>
+                <button class="icon-btn" onclick="toggleNotifications()">🔔<span class="badge-dot"></span></button>
+                <div class="user-avatar" style="width:32px;height:32px;font-size:12px;cursor:pointer" onclick="switchPage('profile')">陈</div>
+            </div>
+        </div>
+
+        <!-- ========== 找继任 ========== -->
+        <div class="page active" id="page-successor">
+            <div class="page-content">
+                <div class="school-banner">
+                    <div class="school-banner-left">
+                        <div class="school-banner-icon">🏫</div>
+                        <div>
+                            <h3 id="bannerSchoolName">北京大学 · 校内继任岗位</h3>
+                            <p>同校学长学姐发布的继任机会，优先推荐给你</p>
+                        </div>
+                    </div>
+                    <div class="school-banner-stats">
+                        <div class="school-banner-stat"><div class="sbs-num">23</div><div class="sbs-label">校内岗位</div></div>
+                        <div class="school-banner-stat"><div class="sbs-num">156</div><div class="sbs-label">本校用户</div></div>
+                        <div class="school-banner-stat"><div class="sbs-num">89%</div><div class="sbs-label">对接成功率</div></div>
+                    </div>
+                </div>
+
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+                    <div class="scope-toggle">
+                        <button class="scope-btn active" onclick="switchScope(this,'school')">🏫 本校优先</button>
+                        <button class="scope-btn all-scope" onclick="switchScope(this,'all')">🌐 全部高校</button>
+                    </div>
+                    <button class="btn btn-primary" onclick="showModal('publishModal')">➕ 发布继任岗位</button>
+                </div>
+
+                <div class="filter-bar">
+                    <span class="filter-tag active" onclick="filterJobs(this,'all')">全部</span>
+                    <span class="filter-tag" onclick="filterJobs(this,'tech')">互联网/技术</span>
+                    <span class="filter-tag" onclick="filterJobs(this,'finance')">金融</span>
+                    <span class="filter-tag" onclick="filterJobs(this,'consulting')">咨询</span>
+                    <span class="filter-tag" onclick="filterJobs(this,'media')">传媒</span>
+                    <select class="filter-select" onchange="showToast('筛选条件已更新')">
+                        <option>同校优先排序</option>
+                        <option>按匹配度排序</option>
+                        <option>按发布时间</option>
+                    </select>
+                </div>
+
+                <div class="job-list" id="jobList"></div>
+            </div>
+        </div>
+
+        <!-- ========== 找内推 ========== -->
+        <div class="page" id="page-referral">
+            <div class="page-content">
+                <div class="school-banner" style="background:linear-gradient(135deg,var(--school),#4338CA)">
+                    <div class="school-banner-left">
+                        <div class="school-banner-icon">🤝</div>
+                        <div>
+                            <h3>北京大学 · 校友内推中心</h3>
+                            <p>本校毕业的学长学姐，优先为你内推</p>
+                        </div>
+                    </div>
+                    <div class="school-banner-stats">
+                        <div class="school-banner-stat"><div class="sbs-num">18</div><div class="sbs-label">校友内推官</div></div>
+                        <div class="school-banner-stat"><div class="sbs-num">42</div><div class="sbs-label">可内推岗位</div></div>
+                    </div>
+                </div>
+
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+                    <div class="scope-toggle">
+                        <button class="scope-btn active" onclick="switchScope(this,'school')">🏫 本校校友</button>
+                        <button class="scope-btn all-scope" onclick="switchScope(this,'all')">🌐 全部校友</button>
+                    </div>
+                    <button class="btn btn-school" onclick="showModal('becomeReferrerModal')">🎓 成为内推官</button>
+                </div>
+
+                <div class="referral-tabs">
+                    <div class="referral-tab active" onclick="switchReferralTab(this,'officers')">内推官列表</div>
+                    <div class="referral-tab" onclick="switchReferralTab(this,'myapply')">我的申请</div>
+                </div>
+
+                <div class="tab-content active" id="tab-officers">
+                    <div class="referral-grid" id="referralGrid"></div>
+                </div>
+
+                <div class="tab-content" id="tab-myapply">
+                    <div class="profile-section">
+                        <div class="profile-section-header"><h3>我的内推申请</h3></div>
+                        <div class="profile-section-body">
+                            <div style="margin-bottom:24px">
+                                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+                                    <div>
+                                        <div style="font-size:15px;font-weight:600;color:var(--gray-800)">字节跳动 - 产品运营实习生</div>
+                                        <div style="font-size:13px;color:var(--gray-400);margin-top:2px">内推官：王学长 <span class="same-school-badge">🏫 北大校友</span></div>
+                                    </div>
+                                    <span class="tag tag-warning">已查看</span>
+                                </div>
+                                <div class="progress-tracker">
+                                    <div class="progress-step done"><div class="progress-step-indicator"><div class="progress-step-circle">✓</div><div class="progress-step-line"></div></div><div class="progress-step-content"><h4>已提交申请</h4><p>2024-01-10</p></div></div>
+                                    <div class="progress-step done"><div class="progress-step-indicator"><div class="progress-step-circle">✓</div><div class="progress-step-line"></div></div><div class="progress-step-content"><h4>校友已查看</h4><p>2024-01-11</p></div></div>
+                                    <div class="progress-step current"><div class="progress-step-indicator"><div class="progress-step-circle">3</div><div class="progress-step-line"></div></div><div class="progress-step-content"><h4>等待内推</h4><p>处理中...</p></div></div>
+                                    <div class="progress-step"><div class="progress-step-indicator"><div class="progress-step-circle">4</div><div class="progress-step-line"></div></div><div class="progress-step-content"><h4>已面试</h4><p>-</p></div></div>
+                                    <div class="progress-step"><div class="progress-step-indicator"><div class="progress-step-circle">5</div></div><div class="progress-step-content"><h4>已入职</h4><p>-</p></div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== 实习圈 ========== -->
+        <div class="page" id="page-community">
+            <div class="page-content">
+                <div class="school-banner" style="background:linear-gradient(135deg,#059669,var(--primary))">
+                    <div class="school-banner-left">
+                        <div class="school-banner-icon">💬</div>
+                        <div>
+                            <h3>北京大学 · 实习圈</h3>
+                            <p>本校同学的实习经验、面经、公司评价</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="scope-toggle" style="margin-bottom:20px">
+                    <button class="scope-btn active" onclick="switchScope(this,'school')">🏫 校内动态</button>
+                    <button class="scope-btn all-scope" onclick="switchScope(this,'all')">🌐 全站热门</button>
+                </div>
+
+                <div class="referral-tabs" style="margin-bottom:24px">
+                    <div class="referral-tab active">推荐</div>
+                    <div class="referral-tab" onclick="showToast('已切换到经验分享')">经验分享</div>
+                    <div class="referral-tab" onclick="showToast('已切换到公司评价')">公司评价</div>
+                    <div class="referral-tab" onclick="showToast('已切换到面经交流')">面经交流</div>
+                </div>
+
+                <div class="community-layout">
+                    <div>
+                        <div class="post-composer">
+                            <div class="composer-header">
+                                <div class="user-avatar" style="width:40px;height:40px;font-size:14px">陈</div>
+                                <div class="composer-input" onclick="showModal('composeModal')">分享你的实习经历给同校小伙伴...</div>
+                            </div>
+                            <div class="composer-actions">
+                                <div class="composer-action" onclick="showModal('composeModal')">📝 经验分享</div>
+                                <div class="composer-action" onclick="showModal('composeModal')">⭐ 公司评价</div>
+                                <div class="composer-action" onclick="showModal('composeModal')">📋 面经</div>
+                            </div>
+                        </div>
+                        <div id="postList"></div>
+                    </div>
+                    <div>
+                        <div class="sidebar-widget">
+                            <div class="widget-title">🔥 校内热门话题</div>
+                            <div id="trendingList"></div>
+                        </div>
+                        <div class="sidebar-widget">
+                            <div class="widget-title">🏆 校内活跃贡献者</div>
+                            <div style="display:flex;flex-direction:column;gap:12px">
+                                <div style="display:flex;align-items:center;gap:10px">
+                                    <div class="user-avatar" style="width:32px;height:32px;font-size:12px;background:linear-gradient(135deg,#F59E0B,#FBBF24)">张</div>
+                                    <div style="flex:1"><div style="font-size:13px;font-weight:600">张同学</div><div style="font-size:11px;color:var(--gray-400)">贡献 28 篇 <span class="same-school-badge">北大</span></div></div>
+                                    <span class="tag tag-warning" style="font-size:11px">🥇</span>
+                                </div>
+                                <div style="display:flex;align-items:center;gap:10px">
+                                    <div class="user-avatar" style="width:32px;height:32px;font-size:12px;background:linear-gradient(135deg,#10B981,#34D399)">刘</div>
+                                    <div style="flex:1"><div style="font-size:13px;font-weight:600">刘同学</div><div style="font-size:11px;color:var(--gray-400)">贡献 21 篇 <span class="same-school-badge">北大</span></div></div>
+                                    <span class="tag" style="font-size:11px;background:#D1FAE5;color:#065F46">🥈</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== 个人中心 ========== -->
+        <div class="page" id="page-profile">
+            <div class="page-content">
+                <div class="profile-header-card">
+                    <div class="profile-cover"></div>
+                    <div class="profile-main">
+                        <div class="profile-avatar-lg">陈</div>
+                        <div class="profile-info">
+                            <div class="profile-name">陈同学</div>
+                            <div class="profile-bio">北京大学 · 计算机科学与技术 · 大三</div>
+                            <div class="profile-tags">
+                                <span class="tag tag-school">🏫 北京大学</span>
+                                <span class="tag tag-primary">产品经理</span>
+                                <span class="tag tag-primary">前端开发</span>
+                                <span class="verified-badge">✓ 已认证</span>
+                            </div>
+                        </div>
+                        <div class="profile-actions">
+                            <button class="btn btn-primary btn-sm" onclick="showToast('编辑资料')">编辑资料</button>
+                            <button class="btn btn-secondary btn-sm" onclick="showToast('已复制分享链接')">分享主页</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="stat-card-icon" style="background:var(--school-bg)">🏆</div><div class="stat-card-value">780</div><div class="stat-card-label">校内信用积分</div></div>
+                    <div class="stat-card"><div class="stat-card-icon" style="background:#D1FAE5">🔄</div><div class="stat-card-value">5</div><div class="stat-card-label">校内成功推荐</div></div>
+                    <div class="stat-card"><div class="stat-card-icon" style="background:#FEF3C7">🤝</div><div class="stat-card-value">3</div><div class="stat-card-label">校友内推申请</div></div>
+                    <div class="stat-card"><div class="stat-card-icon" style="background:#FCE7F3">📝</div><div class="stat-card-value">12</div><div class="stat-card-label">校内社区贡献</div></div>
+                </div>
+
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+                    <div class="profile-section">
+                        <div class="profile-section-header"><h3>📄 简历管理</h3><button class="btn btn-sm btn-outline" onclick="showToast('创建新简历')">+ 新建</button></div>
+                        <div class="profile-section-body">
+                            <div class="resume-card"><div class="resume-icon">📄</div><div class="resume-info"><div class="resume-name">产品经理方向简历</div><div class="resume-meta">更新于 2024-01-15 · 校内公开</div></div><span class="tag tag-success">公开</span></div>
+                            <div class="resume-card"><div class="resume-icon">📄</div><div class="resume-info"><div class="resume-name">前端开发方向简历</div><div class="resume-meta">更新于 2024-01-10 · 仅申请可见</div></div><span class="tag tag-warning">私密</span></div>
+                        </div>
+                    </div>
+                    <div class="profile-section">
+                        <div class="profile-section-header"><h3>⭐ 校内信用积分</h3><button class="btn btn-sm btn-ghost" onclick="showToast('查看积分明细')">明细 →</button></div>
+                        <div class="profile-section-body">
+                            <div class="credit-display">
+                                <div class="credit-circle"><div class="credit-circle-inner"><div class="credit-score">780</div><div class="credit-label">校内信用分</div></div></div>
+                                <div class="credit-level">🌟 优秀信用 · 校内 Top 15%</div>
+                                <div class="credit-details">
+                                    <div class="credit-detail"><div class="credit-detail-value" style="color:var(--success)">+120</div><div class="credit-detail-label">本月获得</div></div>
+                                    <div class="credit-detail"><div class="credit-detail-value" style="color:var(--danger)">-20</div><div class="credit-detail-label">本月扣除</div></div>
+                                    <div class="credit-detail"><div class="credit-detail-value">Top 15%</div><div class="credit-detail-label">校内排名</div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-section">
+                    <div class="profile-section-header"><h3>📅 校内推荐与内推记录</h3></div>
+                    <div class="profile-section-body">
+                        <div class="timeline">
+                            <div class="timeline-item"><div class="timeline-dot" style="background:var(--success)"></div><div class="timeline-content"><div class="timeline-title">成功推荐张同学继任美团产品实习 <span class="same-school-badge">🏫 同校</span></div><div class="timeline-desc">获得 +30 校内信用积分</div><div class="timeline-time">2024-01-14</div></div></div>
+                            <div class="timeline-item"><div class="timeline-dot" style="background:var(--school)"></div><div class="timeline-content"><div class="timeline-title">向王学长发起校友内推申请 <span class="same-school-badge">🏫 北大校友</span></div><div class="timeline-desc">字节跳动产品运营实习生</div><div class="timeline-time">2024-01-10</div></div></div>
+                            <div class="timeline-item"><div class="timeline-dot" style="background:var(--secondary)"></div><div class="timeline-content"><div class="timeline-title">发布继任岗位：腾讯产品策划实习生</div><div class="timeline-desc">已有 6 位同校候选人匹配</div><div class="timeline-time">2024-01-08</div></div></div>
+                            <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-title">完成北京大学校园邮箱认证</div><div class="timeline-desc">获得 +50 初始信用积分</div><div class="timeline-time">2024-01-01</div></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== 消息 ========== -->
+        <div class="page" id="page-messages">
+            <div class="page-content">
+                <h2 style="font-size:24px;font-weight:800;margin-bottom:24px">消息中心</h2>
+                <div class="profile-section">
+                    <div class="profile-section-body">
+                        <div class="notification-item unread" style="border-radius:10px;margin-bottom:8px">
+                            <div class="notif-icon" style="background:#D1FAE5">🎉</div>
+                            <div class="notif-content"><div class="notif-title">同校的张同学接受了你的继任推荐</div><div class="notif-desc">美团产品实习岗位推荐成功 <span class="same-school-badge">🏫 同校</span></div><div class="notif-time">10 分钟前</div></div>
+                        </div>
+                        <div class="notification-item unread" style="border-radius:10px;margin-bottom:8px">
+                            <div class="notif-icon" style="background:var(--school-bg)">🤝</div>
+                            <div class="notif-content"><div class="notif-title">北大校友王学长查看了你的内推申请</div><div class="notif-desc">字节跳动产品运营实习生</div><div class="notif-time">2
